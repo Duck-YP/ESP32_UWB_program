@@ -171,8 +171,11 @@ from: 4A3C   Range: 0.54 m   RX power: -56.73 dBm
 > 建議以 `venv` 隔離環境：
 
 ```bash
-python3 -m venv venv && source venv/bin/activate
+python3 -m venv venv 
+source venv/bin/activate
+
 python3 -m pip install --upgrade pip
+
 python3 -m pip install pyserial matplotlib pandas
 ```
 

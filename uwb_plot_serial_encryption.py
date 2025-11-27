@@ -18,7 +18,7 @@ PACKET_VERSION = 0x01
 
 # ========= Serial 連線設定 =========
 ser = serial.Serial(
-    port="/dev/cu.usbserial-02E2277A",  # 請改成你的實際埠名
+    port="/dev/cu.usbserial-02E2277A",  # 請改成實際埠名
     baudrate=115200,
     timeout=1.0,
 )

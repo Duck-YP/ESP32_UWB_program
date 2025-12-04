@@ -4,7 +4,7 @@
 >
 > 作業系統：macOS（以 M1/12.1 實測）。IDE：Arduino IDE 2.x / VS Code（選用）。
 >
-> 內含三個 Python 腳本：`uwb_plot_serial.py`、`uwb_plot_udp.py`、`uwb_packet_ladder.py`。
+> 內含三個 Python 腳本：`plot_serial.py`、`plot_udp.py`、`packet_ladder.py`。
 
 ---
 
@@ -20,9 +20,9 @@
 * [（選用）Tag/Anchor 送 UDP 距離與事件](#選用taganchor-送-udp-距離與事件)
 * [Python 即時視覺化](#python-即時視覺化)
 
-  * [1) Serial 版：`uwb_plot_serial.py`](#1-serial-版uwb_plot_serialpy)
-  * [2) UDP 版：`uwb_plot_udp.py`](#2-udp-版uwb_plot_udppy)
-  * [3) 封包 MSC 梯形圖：`uwb_packet_ladder.py`](#3-封包-msc-梯形圖uwb_packet_ladderpy)
+  * [1) Serial 版：`plot_serial.py`](#1-serial-版plot_serialpy)
+  * [2) UDP 版：`plot_udp.py`](#2-udp-版plot_udppy)
+  * [3) 封包 MSC 梯形圖：`packet_ladder.py`](#3-封包-msc-梯形圖packet_ladderpy)
 * [教授要看的「兩個封包視覺化」是什麼](#教授要看的兩個封包視覺化是什麼)
 * [VS Code 操作（選用）](#vs-code-操作選用)
 * [疑難排解（FAQ）](#疑難排解faq)
@@ -73,9 +73,9 @@ Makerfabs 官方提供相容的 **DW1000** 函式庫（檔名通常為 `mf_DW100
 * 官方 repo：`Makerfabs-ESP32-UWB` → 使用 `example/anchor/` 與 `example/tag/`。
 * 本倉庫提供三個 Python 視覺化腳本，放在倉庫根目錄：
 
-  * `uwb_plot_serial.py`
-  * `uwb_plot_udp.py`
-  * `uwb_packet_ladder.py`
+  * `plot_serial.py`
+  * `plot_udp.py`
+  * `packet_ladder.py`
 
 > 若你要在 MCU 端送 UDP 事件/距離，請參考本倉庫 `example/tag/` 與 `example/anchor/` 內附的 **已加註解版本**（可直接燒錄）。
 
@@ -122,7 +122,7 @@ from: 4A3C   Range: 0.54 m   RX power: -56.73 dBm
 ## 燒錄 Tag 範例（Serial 版本）
 
 1. 插上 **第 2 塊**（預計當 Tag）。
-2. 開啟 `example/tag/uwb_tag/uwb_tag.ino`（或本倉庫增強版）。
+2. 開啟 `example/tag/tag/tag.ino`（或本倉庫增強版）。
 3. 同樣設定板型與 Port → **Upload**。
 4. `Serial Monitor`（115200 bps）應持續列印 **距離** 與 **RSSI**。
 
@@ -179,14 +179,14 @@ python3 -m pip install --upgrade pip
 python3 -m pip install pyserial matplotlib pandas
 ```
 
-### 1) Serial 版：`uwb_plot_serial.py`
+### 1) Serial 版：`plot_serial.py`
 
 **功能**：從 Tag 串列輸出解析距離（公尺），即時畫「距離 vs. 時間」，可存 CSV。
 
 **用法**：
 
 ```bash
-python3 uwb_plot_serial.py --port /dev/cu.usbserial-02E2277A --baud 115200 --save run_serial.csv --window 300
+python3 plot_serial.py --port /dev/cu.usbserial-02E2277A --baud 115200 --save run_serial.csv --window 300
 ```
 
 **參數**：
@@ -200,7 +200,7 @@ python3 uwb_plot_serial.py --port /dev/cu.usbserial-02E2277A --baud 115200 --sav
 
 ---
 
-### 2) UDP 版：`uwb_plot_udp.py`
+### 2) UDP 版：`plot_udp.py`
 
 **功能**：監聽 9000 埠，解析 MCU 送來的 `"Range: <m>"` 訊息，畫距離折線圖、可存 CSV。
 
@@ -211,7 +211,7 @@ python3 uwb_plot_serial.py --port /dev/cu.usbserial-02E2277A --baud 115200 --sav
 nc -ul 9000
 
 # 看到連續的 "Range: 0.85 m" 後，改跑 Python 視覺化
-python3 uwb_plot_udp.py --port 9000 --save run_udp.csv --print-every 10
+python3 plot_udp.py --port 9000 --save run_udp.csv --print-every 10
 ```
 
 **參數**：
@@ -223,7 +223,7 @@ python3 uwb_plot_udp.py --port 9000 --save run_udp.csv --print-every 10
 
 ---
 
-### 3) 封包 MSC 梯形圖：`uwb_packet_ladder.py`
+### 3) 封包 MSC 梯形圖：`packet_ladder.py`
 
 **功能**：監聽 9100 埠的**封包事件**，把 `TAG` 與 `ANCHOR` 的 **TX/RX/RANGE/HEARTBEAT** 畫成**訊息序列圖（Message Sequence Chart）**，並在下方顯示 **每秒事件數（pps）**。
 
@@ -241,7 +241,7 @@ role=TAG|ANCHOR  evt=HEARTBEAT    host_ts=0
 # 先確認有事件
 nc -ul 9100
 # 看見 HEARTBEAT 與 TX/RX 後，改跑視覺化：
-python3 uwb_packet_ladder.py --port 9100 --window 60 --pair-horizon 0.3 --debug
+python3 packet_ladder.py --port 9100 --window 60 --pair-horizon 0.3 --debug
 ```
 
 **參數**：
@@ -261,8 +261,8 @@ python3 uwb_packet_ladder.py --port 9100 --window 60 --pair-horizon 0.3 --debug
 
 ## 教授要看的「兩個封包視覺化」是什麼
 
-1. **距離 vs. 時間**：以 `uwb_plot_serial.py`（或 `uwb_plot_udp.py`）畫出**測距曲線**，可附 CSV 作為原始證據。
-2. **封包訊息序列（MSC）**：以 `uwb_packet_ladder.py` 畫出每一輪**封包從 TAG 到 ANCHOR 的 TX→RX**（以及回程），呈現鏈路健康度與事件率。
+1. **距離 vs. 時間**：以 `plot_serial.py`（或 `plot_udp.py`）畫出**測距曲線**，可附 CSV 作為原始證據。
+2. **封包訊息序列（MSC）**：以 `packet_ladder.py` 畫出每一輪**封包從 TAG 到 ANCHOR 的 TX→RX**（以及回程），呈現鏈路健康度與事件率。
 
 > 簡報話術建議：
 >
@@ -305,13 +305,13 @@ python3 uwb_packet_ladder.py --port 9100 --window 60 --pair-horizon 0.3 --debug
 ## 資料夾建議結構
 
 ```
-ESP32_UWB_program/
+ESP32_program/
 ├── example/
 │   ├── anchor/              # Anchor 增強版（含 UDP 事件/距離，繁中註解）
 │   └── tag/                 # Tag 增強版（含 UDP 事件/距離，繁中註解）
-├── uwb_plot_serial.py       # 串列即時距離圖 + CSV
-├── uwb_plot_udp.py          # UDP 距離圖 + CSV
-├── uwb_packet_ladder.py     # UDP 事件 MSC + PPS
+├── plot_serial.py       # 串列即時距離圖 + CSV
+├── plot_udp.py          # UDP 距離圖 + CSV
+├── packet_ladder.py     # UDP 事件 MSC + PPS
 └── README.md                # 本文件
 ```
 
@@ -338,11 +338,11 @@ nc -ul 9000
 nc -ul 9100
 
 # 視覺化（常用）
-python3 uwb_plot_serial.py --port /dev/cu.usbserial-XXXX --baud 115200 --save run.csv
+python3 plot_serial.py --port /dev/cu.usbserial-XXXX --baud 115200 --save run.csv
 
-python3 uwb_plot_udp.py    --port 9000 --save run_udp.csv --print-every 10
+python3 plot_udp.py    --port 9000 --save run_udp.csv --print-every 10
 
-python3 uwb_packet_ladder.py \
+python3 packet_ladder.py \
   --port 9100 --window 60 \
   --pair-horizon 0.30 --pair-horizon-full 0.40 \
   --reorder-guard 0.02 --strict-order \

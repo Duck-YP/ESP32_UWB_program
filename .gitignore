@@ -210,7 +210,6 @@ __marimo__/
 
 # --- IGNORE ---
 old/
-DW1000/
 results/
 .DS_Store
 .vscode/
